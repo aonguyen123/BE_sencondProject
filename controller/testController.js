@@ -2,8 +2,10 @@ const registerValid = require('./../validation/register');
 const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
 const User = require('./../model/user');
+const jwt = require('jsonwebtoken');
 const SV = require('./../model/testUser');
 const testSV = require('./../validation/testSV');
+const loginValid = require('./../validation/login');
 
 exports.getAllData = async (req, res) => {
     const listUser = await User.find();
@@ -132,4 +134,50 @@ exports.updateTime = async (req, res) => {
     res.json({
         msg: 'updated'
     })
+}
+exports.dangnhap = async (req, res) => {
+    const { errors, isValid } = loginValid(req.body);
+    if(!isValid)
+    {
+        return res.status(400).json(errors);
+    }
+    const { email, password } = req.body;
+    const user = await User.findOne({email});
+    if(!user)
+    {
+        errors.email = 'User không tồn tại';
+        return res.status(200).json(errors);
+    }
+    bcrypt.compare(password, user.password).then(isMatch => {
+        if(isMatch)
+        {
+            const payload = {
+                id: user.id,
+                name: user.name,
+                avatar: user.avatar,
+                email: user.email
+            }
+            jwt.sign(payload, 'secret', {
+                expiresIn: 3600
+            }, (err, token) => {
+                if(err)
+                {
+                    console.log('Loi in Token', err);
+                }
+                else
+                {
+                    res.json({
+                        success: true,
+                        token: `Bearer ${token}`,
+                        user
+                    });
+                }
+            });
+        }
+        else
+        {
+            errors.password = 'Mật khẩu không đúng'
+            return res.status(400).json(errors);
+        }
+    });
 }

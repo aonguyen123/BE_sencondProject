@@ -1,32 +1,35 @@
 const userController = require('./../controller/user');
 const passport = require('passport');
 const testController = require('./../controller/testController');
+const router = require('express').Router();
 
-module.exports = app => {
-    app.post('/api/register', (req, res) => {
-        userController.register(req, res);
-    });
-    app.post('/api/login', (req, res) => {
-        userController.login(req, res);
-    });
-    app.get('/api/me',passport.authenticate('jwt', { session: false }), (req, res) => {
-        userController.getMe(req, res);
-    })
+router.post('/register', (req, res) => {
+    userController.register(req, res);
+});
+router.post('/login', (req, res) => {
+    userController.login(req, res);
+});
+router.get('/me',passport.authenticate('jwt', { session: false }), (req, res) => {
+    userController.getMe(req, res);
+})
 
     //test
-    app.get('/api/getAllData', (req, res) => {
-        testController.getAllData(req, res);
-    })
-    app.post('/api/createUser', (req, res) => {
-        testController.createUser(req, res);
-    })
-    app.post('/api/createSV', (req, res) => {
-        testController.createSV(req, res);
-    });
-    app.get('/api/checkSV', (req, res) => {
-        testController.checkSV(req, res);
-    })
-    app.put('/api/updateTime', (req, res) => {
-        testController.updateTime(req, res)
-    });
-}
+router.get('/getAllData', (req, res) => {
+    testController.getAllData(req, res);
+})
+router.post('/createUser', (req, res) => {
+    testController.createUser(req, res);
+})
+router.post('/createSV', (req, res) => {
+    testController.createSV(req, res);
+});
+router.get('/checkSV', (req, res) => {
+    testController.checkSV(req, res);
+})
+router.put('/updateTime', (req, res) => {
+    testController.updateTime(req, res);
+});
+router.post('/dangnhap', (req, res) => {
+    testController.dangnhap(req, res);
+})
+module.exports = router;
