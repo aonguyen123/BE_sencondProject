@@ -32,4 +32,7 @@ router.put('/updateTime', (req, res) => {
 router.post('/dangnhap', (req, res) => {
     testController.dangnhap(req, res);
 })
+router.post('/getFile', (req, res) => {
+    testController.file(req, res);
+});
 module.exports = router;

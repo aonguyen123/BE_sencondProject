@@ -139,7 +139,7 @@ exports.dangnhap = async (req, res) => {
     const { errors, isValid } = loginValid(req.body);
     if(!isValid)
     {
-        return res.status(400).json(errors);
+        return res.status(200).json(errors);
     }
     const { email, password } = req.body;
     const user = await User.findOne({email});
@@ -177,7 +177,13 @@ exports.dangnhap = async (req, res) => {
         else
         {
             errors.password = 'Mật khẩu không đúng'
-            return res.status(400).json(errors);
+            return res.status(200).json(errors);
         }
     });
+};
+exports.file = async (req, res) => {
+    console.log(req.body);
+    res.send({
+        msg: 'true'
+    })
 }
