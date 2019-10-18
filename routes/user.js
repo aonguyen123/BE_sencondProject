@@ -35,4 +35,13 @@ router.post('/dangnhap', (req, res) => {
 router.post('/getFile', (req, res) => {
     testController.file(req, res);
 });
+router.post('/createLop', (req, res) => {
+    testController.createLop(req, res);
+})
+router.post('/capnhatngay', (req, res) => {
+    testController.capnhatngay(req, res);
+});
+router.get('/kiemdien', (req, res) => {
+    testController.kiemdien(req, res);
+});
 module.exports = router;
