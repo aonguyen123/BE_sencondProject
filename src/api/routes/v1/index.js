@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const userRouter = require("./user.router");
 const authRouter = require('./auth.router');
+const weatherRouter = require('./weather.router');
 
 router.get("/status", (req, res) => {
 	res.json({
@@ -13,5 +14,6 @@ router.get("/status", (req, res) => {
 
 router.use('/user', userRouter);
 router.use('/auth', authRouter);
+router.use('/weather', weatherRouter);
 
 module.exports = router;
