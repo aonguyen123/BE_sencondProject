@@ -17,7 +17,7 @@ module.exports = {
 			console.log(query)
 
 			const geocoder = nodeGeocoder(options);
-			geocoder.reverse({lat: 14.058324, lon: 108.277199}).then(res => {
+			await geocoder.reverse({lat: 14.058324, lon: 108.277199}).then(res => {
 				result = res;
 			})
 			return {
