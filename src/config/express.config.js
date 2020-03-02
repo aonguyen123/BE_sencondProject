@@ -10,6 +10,7 @@ const routes = require('./../api/routes/v1');
 const error = require('./../api/middlewares/error');
 
 const app = express();
+
 app.use(morgan(logs));
 app.use(cors());
 app.use(express.json());

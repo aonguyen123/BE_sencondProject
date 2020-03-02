@@ -19,9 +19,9 @@ exports.getWeather = async (req, res, next) => {
 };
 exports.getGeocode = async (req, res, next) => {
 	try {
-		const { query } = req.query;
+		const { latitude, longitude } = req.query;
 		const { getGeocode } = weatherService;
-		const result = await getGeocode(query);
+		const result = await getGeocode(latitude, longitude);
 		if (result.code === 500) {
 			return res
 				.status(httpStatus.INTERNAL_SERVER_ERROR)
