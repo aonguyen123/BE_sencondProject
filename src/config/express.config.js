@@ -1,29 +1,32 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const cors = require('cors');
-const tmp = require('tmp');
 
 const { connectDB } = require('./../api/repository');
 const { logs } = require('./../constants');
-const session = require('./../config/session.config');
 const routes = require('./../api/routes/v1');
+const piblicRoutes = require('./../api/routes/v1/public.router');
 const error = require('./../api/middlewares/error');
 
 const app = express();
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
+app.use('/public', express.static('public'));
 app.use(morgan(logs));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-app.use(session());
 
 connectDB();
 
 app.use('/api/v1', routes);
+app.use('/public', piblicRoutes);
 app.use(error.converter);
 app.use(error.notFound);
 app.use(error.handler);
-
-tmp.setGracefulCleanup();
 
 module.exports = app;

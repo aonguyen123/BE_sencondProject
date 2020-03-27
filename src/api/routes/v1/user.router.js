@@ -1,14 +1,40 @@
 const router = require('express').Router();
-const validate = require('express-validation');
-
+const multer = require("multer");
 const userController = require('./../../controllers/user.controller');
-const userValidation = require('./../../validations/user.validation');
 const authMiddleware = require('../../middlewares/auth.middleware');
 
-//un protected route
-//router.route('/greet-me').get(validate(userValidation.me), userController.me);
+const DIR = "./public/uploads/";
 
-//protected route
-router.route('/greet-me-protected').get(authMiddleware, userController.me);
+const storage = multer.diskStorage({
+	destination: (req, file, cb) => {
+		cb(null, DIR);
+	},
+	filename: (req, file, cb) => {
+		const fileName = file.originalname
+			.toLowerCase()
+			.split(" ")
+			.join("-");
+		cb(null, "IMAGE-" + Date.now() + fileName);
+	}
+});
+
+var upload = multer({
+	storage: storage,
+	fileFilter: (req, file, cb) => {
+		if (
+			file.mimetype == "image/png" ||
+			file.mimetype == "image/jpg" ||
+			file.mimetype == "image/jpeg"
+		) {
+			cb(null, true);
+		} else {
+			cb(null, false);
+		}
+	}
+});
+
+router.route('/search-user').get(userController.searchUser);
+router.route('/fetch-user/:id').get(authMiddleware, userController.fetchUser);
+router.route('/upload-avatar').post(authMiddleware, userController.uploadAvatar);
 
 module.exports = router;

@@ -1,20 +1,23 @@
 const httpStatus = require('http-status');
 const authService = require('./../services/auth.service');
-const responseAuthService = require('./../services/responseAuth.service');
+const responseService = require('./../services/response.service');
 
 exports.register = async (req, res, next) => {
 	try
 	{
-		const { email, password, birthday, gender } = req.body;
-		const user = {
-			email, password, birthday, gender
-		}
-		const response = await authService.register(user);
-		if(response.code === httpStatus.BAD_REQUEST)
+		const { values } = req.body;
+		const response = await authService.register(values);
+		const { code, ...rest } = response;
+
+		if(code === httpStatus.BAD_REQUEST)
 		{
-			return res.status(httpStatus.BAD_REQUEST).json(response);
+			return res.status(httpStatus.BAD_REQUEST).json(rest);
 		}
-		return res.status(httpStatus.OK).json(response);
+		else if(code === httpStatus.INTERNAL_SERVER_ERROR)
+		{
+			return res.status(httpStatus.INTERNAL_SERVER_ERROR).json(rest);
+		}
+		return res.status(httpStatus.OK).json(rest);
 	}
 	catch(e)
 	{
@@ -33,11 +36,11 @@ exports.login = async (req, res, next) => {
 
 		if(code === httpStatus.BAD_REQUEST)
 		{
-			return res.status(httpStatus.BAD_REQUEST).json(response);
+			return res.status(httpStatus.BAD_REQUEST).json(rest);
 		}
 		else if(code === httpStatus.INTERNAL_SERVER_ERROR)
 		{
-			return res.status(httpStatus.INTERNAL_SERVER_ERROR).json(responseAuthService.internal_server_error());
+			return res.status(httpStatus.INTERNAL_SERVER_ERROR).json(rest);
 		}
 		return res.status(httpStatus.OK).json(rest);
 	}
@@ -49,15 +52,11 @@ exports.login = async (req, res, next) => {
 exports.refreshToken = async (req, res, next) => {
 	try{
 		const { refreshToken } = req.body;
-		if(!refreshToken)
-		{
-			return res.status(httpStatus[403]).json(responseAuthService.notAuthenticated());
-		}
 		const response = await authService.refreshToken(refreshToken);
 		const { code, ...rest } = response;
 		if(code === httpStatus.UNAUTHORIZED)
 		{
-			return res.status(httpStatus.UNAUTHORIZED).json(responseAuthService.refresh_token_expires());
+			return res.status(httpStatus.UNAUTHORIZED).json(responseService.not_authenticated().message);
 		}
 		return res.status(httpStatus.OK).json(rest);
 	}

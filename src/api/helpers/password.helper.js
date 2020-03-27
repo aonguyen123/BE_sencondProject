@@ -9,6 +9,7 @@ const hashPassword = async password => {
 const comparePassword = async (oldPassword, newPassword) => {
 	let rs = true;
 	const isMatch = await bcrypt.compare(newPassword, oldPassword);
+
 	if(!isMatch)
 	{
 		rs = false;

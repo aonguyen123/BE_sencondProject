@@ -1,13 +1,17 @@
-const httpStatus = require('http-status');
 module.exports = {
 	server_error: () => {
 		return {
-			message: 'INTERNAL_SERVER_ERROR'
+			message: 'Internal server error'
 		}
 	},
 	bad_request: () => {
 		return {
 			message: 'BAD_REQUEST'
+		}
+	},
+	not_authenticated: () => {
+		return {
+			message: 'NOT_AUTHENTICATED'
 		}
 	}
 }

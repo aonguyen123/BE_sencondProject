@@ -1,6 +1,6 @@
 const httpStatus = require('http-status');
 const { verifyToken } = require('./../helpers/jwt.helper');
-const responseAuthService = require('../services/responseAuth.service');
+const responseService = require('../services/response.service');
 
 module.exports = async (req, res, next) => {
 	const secretToken = process.env.JWT_SECRET || 'access-token-secret-aonguyen'
@@ -14,11 +14,11 @@ module.exports = async (req, res, next) => {
 		}
 		catch(e)
 		{
-			return res.status(httpStatus.UNAUTHORIZED).json(responseAuthService.notAuthenticated());
+			return res.status(httpStatus.UNAUTHORIZED).json(responseService.not_authenticated().message);
 		}
 	}
 	else
 	{
-		return res.status(httpStatus.FORBIDDEN).json(responseAuthService.token_empty());
+		return res.status(httpStatus.UNAUTHORIZED).json(responseService.not_authenticated().message);
 	}
 }
