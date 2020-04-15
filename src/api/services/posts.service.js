@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 const httpStatus = require("http-status");
-const responseService = require("./response.service");
 const { postCollection } = require("./../repository");
 const { asyncForEach } = require("./../helpers/loop.helper");
 
 module.exports = {
-	createPost: async (reqFiles, idUser, mentionsList, posts) => {
+	createPost: async (urlImages, idUser, mentions, posts) => {
 		try {
+
 			const post = new postCollection({
 				idUser,
 				content: posts
@@ -18,9 +18,9 @@ module.exports = {
 					message: "Create post error"
 				};
 			}
-			if (mentionsList !== undefined) {
+			if (mentions !== undefined) {
 				let item = {};
-				await asyncForEach(mentionsList, async mention => {
+				await asyncForEach(mentions, async mention => {
 					item.idUser = mention;
 					await postCollection.updateMany(
 						{ _id: result._id },
@@ -29,10 +29,10 @@ module.exports = {
 					item = {};
 				});
 			}
-			if (reqFiles.length > 0) {
+			if (urlImages.length > 0) {
 				let item = {};
-				await asyncForEach(reqFiles, async file => {
-					item.url = file;
+				await asyncForEach(urlImages, async url => {
+					item.url = url;
 					await postCollection.updateMany(
 						{ _id: result._id },
 						{ $push: { images: item } }
@@ -40,19 +40,14 @@ module.exports = {
 					item = {};
 				});
 			}
-			const newPostResult = await postCollection
-				.findById(result._id)
-				.populate("idUser")
-				.populate("mentions.idUser");
 			return {
 				code: httpStatus.OK,
 				message: "Create post success",
-				newPost: newPostResult
 			};
 		} catch (e) {
 			return {
 				code: httpStatus.INTERNAL_SERVER_ERROR,
-				message: responseService.server_error().message
+				message: 'Create post fail. Server error, please again!!!'
 			};
 		}
 	},
@@ -81,7 +76,7 @@ module.exports = {
 		} catch (e) {
 			return {
 				code: httpStatus.INTERNAL_SERVER_ERROR,
-				message: responseService.server_error().message
+				message: 'Fetch post fail. Server error, please again!!!'
 			};
 		}
 	},
@@ -110,7 +105,7 @@ module.exports = {
 		} catch (e) {
 			return {
 				code: httpStatus.INTERNAL_SERVER_ERROR,
-				message: responseService.server_error().message
+				message: 'Fetch post by id fail. Server error, please again!!!'
 			};
 		}
 	}

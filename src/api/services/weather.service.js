@@ -25,7 +25,8 @@ module.exports = {
 		catch(e)
 		{
 			return {
-				code: httpStatus.INTERNAL_SERVER_ERROR
+				code: httpStatus.INTERNAL_SERVER_ERROR,
+				message: 'Fetch weather fail, server error, please again !!!'
 			}
 		}
 	}

@@ -1,30 +1,35 @@
-const httpStatus = require('http-status');
+const httpStatus = require("http-status");
 const { userCollection } = require("./../repository");
-const responseService = require('./response.service');
 
 module.exports = {
 	searchUser: async q => {
-		const data = await userCollection.find({nickname: {$regex: '.*' + q + '.*' }});
-		// const data = await userCollection.find({$text: {$search: q}});
-		return {
-			data
+		try {
+			const data = await userCollection.find({
+				searchUser: { $regex: ".*" + q + ".*" }
+			});
+			return {
+				code: httpStatus.OK,
+				data
+			};
+		} catch (e) {
+			return {
+				code: httpStatus.INTERNAL_SERVER_ERROR,
+				message: 'Search user fail. Server error, please again!!!'
+			};
 		}
 	},
 	fetchUser: async idUser => {
-		try
-		{
+		try {
 			const userData = await userCollection.findById(idUser);
 			return {
 				code: httpStatus.OK,
 				userData
 			};
-		}
-		catch(e)
-		{
+		} catch (e) {
 			return {
 				code: httpStatus.INTERNAL_SERVER_ERROR,
-				message: responseService.server_error().message
-			}
+				message: 'Fetch user fail. Server error, please again!!!'
+			};
 		}
 	}
-}
+};

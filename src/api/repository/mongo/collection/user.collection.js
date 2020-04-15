@@ -5,17 +5,30 @@ const userSchema = new Schema({
 	_id: Schema.Types.ObjectId,
 	email: String,
 	password: String,
-	nickname: String,
-	gender: String,
-	birthday: String,
-	provinceOrCity: String,
-	district: String,
-	phonenumber: String,
-	description: {
+	displayName: String,
+	searchUser: String,
+	photoURL: String,
+	gender: {
 		type: String,
 		default: ''
 	},
-	avatar: {
+	birthday: {
+		type: String,
+		default: ''
+	},
+	provinceOrCity: {
+		type: String,
+		default: ''
+	},
+	district: {
+		type: String,
+		default: ''
+	},
+	phonenumber: {
+		type: String,
+		default: ''
+	},
+	description: {
 		type: String,
 		default: ''
 	}

@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const { databaseURL } = require('./../../../constants');
 const userCollection = require('./collection/user.collection');
 const postCollection = require('./collection/post.collection');
+const chatCollection = require('./collection/chat.collection');
 
 const connectDB = () => {
 	mongoose.connect(databaseURL, {
@@ -19,5 +20,6 @@ const connectDB = () => {
 module.exports = {
 	userCollection,
 	postCollection,
+	chatCollection,
 	connectDB
 }
