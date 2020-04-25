@@ -1,37 +1,49 @@
-const { userCollection } = require('./../api/repository/index');
+const {
+	userChatCollection,
+	statusChatCollection,
+} = require("./../api/repository");
 
-const users = [];
+async function addUserChat(_id, socketId) {
+	const newUserChat = new userChatCollection({
+		idUser: _id,
+		socketId,
+	});
+	const doc = await newUserChat.save();
+	const userChat = await userChatCollection
+		.findById(doc._id)
+		.populate("idUser", "displayName photoURL");
+	const statusChat = new statusChatCollection({
+		displayName: userChat.idUser.displayName,
+		text: "has joined",
+	});
+	const data = await statusChat.save();
+	return {data, userChat};
+}
+async function removeUserChat(socketId) {
+	try {
+		const data = await userChatCollection
+		.findOne({ socketId })
+		.populate("idUser", "displayName");
+		if(data) {
+			const statusChat = new statusChatCollection({
+				displayName: data.idUser.displayName,
+				text: "has left",
+			});
+			const doc = await statusChat.save();
+			await userChatCollection.deleteOne({ socketId });
+			return doc;
+		}
+	} catch (error) {
 
-function addUser({id, username, room, _id, photoURL, time}) {
-	const index = users.findIndex(user => user._id === _id && user.status === 'offline');
-	if(index !== -1) {
-		users.splice(index, 1);
 	}
-
-	const user = { id, username, room, _id, photoURL, time, status: 'online' }
-
-	users.push(user);
-
-	return { user };
 }
-function updateUserOffline(id) {
-	const index = users.findIndex(user => user.id === id);
-	if(index !== -1) {
-		users[index].status = 'offline';
-		users[index].time = Date.now();
-		return users[index];
-	}
-}
-function getUser(id) {
-	return users.find(user => user.id === id);
-}
-function getUserInRoom(room) {
-	return users.filter(user => user.room === room);
+async function getUser(socketId) {
+	const user = await userChatCollection.findOne({ socketId });
+	return user;
 }
 
 module.exports = {
-	addUser,
-	updateUserOffline,
+	addUserChat,
+	removeUserChat,
 	getUser,
-	getUserInRoom
-}
+};
