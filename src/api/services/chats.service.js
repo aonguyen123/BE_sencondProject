@@ -1,31 +1,12 @@
 const mongoose = require('mongoose');
 const httpStatus = require("http-status");
 const {
-	statusChatCollection,
 	roomCollection,
 	chatCollection,
 	joinChatCollection
 } = require("./../repository");
 
 module.exports = {
-	getStatusChat: async () => {
-		try {
-			const statusChats = await statusChatCollection
-				.find()
-				.sort({ _id: "desc" })
-				.limit(20);
-			statusChats.reverse();
-			return {
-				code: httpStatus.OK,
-				statusChats,
-			};
-		} catch (error) {
-			return {
-				code: httpStatus.INTERNAL_SERVER_ERROR,
-				message: "Fetch status chat fail, server error. Try again !!!",
-			};
-		}
-	},
 	getRooms: async () => {
 		try {
 			const rooms = await roomCollection

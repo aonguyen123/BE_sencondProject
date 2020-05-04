@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const httpStatus = require("http-status");
 const { userCollection } = require("./../repository");
 
@@ -26,6 +27,27 @@ module.exports = {
 				userData
 			};
 		} catch (e) {
+			return {
+				code: httpStatus.INTERNAL_SERVER_ERROR,
+				message: 'Fetch user fail. Server error, please again!!!'
+			};
+		}
+	},
+	fetchUserById: async idUser => {
+		try {
+			idUser = mongoose.Types.ObjectId(idUser);
+			const user = await userCollection.findById(idUser);
+			if(user) {
+				return {
+					code: httpStatus.OK,
+					user
+				}
+			}
+			return {
+				code: httpStatus.BAD_REQUEST,
+				message: 'User not found'
+			}
+		} catch (error) {
 			return {
 				code: httpStatus.INTERNAL_SERVER_ERROR,
 				message: 'Fetch user fail. Server error, please again!!!'

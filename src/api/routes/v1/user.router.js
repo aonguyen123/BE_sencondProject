@@ -4,5 +4,6 @@ const authMiddleware = require('../../middlewares/auth.middleware');
 
 router.route('/search-user').get(authMiddleware, userController.searchUser);
 router.route('/fetch-user/:id').get(authMiddleware, userController.fetchUser);
+router.route('/fetch-user-by-id/:id').get(authMiddleware, userController.fetchUserById);
 
 module.exports = router;

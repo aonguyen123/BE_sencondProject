@@ -39,3 +39,21 @@ exports.fetchUser = async (req, res, next) => {
 		next(e);
 	}
 };
+exports.fetchUserById = async (req, res, next) => {
+	try {
+		const { id } = req.params;
+		const response = await userService.fetchUserById(id);
+		const { code, ...rest } = response;
+		if (code === httpStatus.INTERNAL_SERVER_ERROR) {
+			return res.status(500).json(rest);
+		}
+		if (code === httpStatus.OK) {
+			return res.status(200).json(rest);
+		}
+		if(code === httpStatus.BAD_REQUEST) {
+			return res.status(400).json(rest);
+		}
+	} catch (error) {
+		next(error);
+	}
+}

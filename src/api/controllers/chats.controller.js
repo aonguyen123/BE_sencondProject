@@ -1,17 +1,5 @@
 const chatsService = require('./../services/chats.service');
 
-exports.getStatusChat = async (req, res, next) => {
-	try {
-		const response = await chatsService.getStatusChat();
-		const { code, ...rest } = response;
-		if(code === 500) {
-			return res.status(500).json(rest);
-		}
-		return res.status(200).json(rest);
-	} catch (error) {
-		next(error);
-	}
-}
 exports.getRooms = async (req, res, next) => {
 	try {
 		const response = await chatsService.getRooms();

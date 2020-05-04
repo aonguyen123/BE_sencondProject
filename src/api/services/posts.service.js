@@ -63,11 +63,17 @@ module.exports = {
 				.sort({ _id: "desc" })
 				.populate("idUser")
 				.populate("mentions.idUser");
-			if (posts.length === 0) {
+			if (posts.length === 0 && page === 1) {
+				return {
+					code: httpStatus.OK,
+					posts
+				};
+			}
+			else if(posts.length === 0) {
 				return {
 					code: httpStatus.BAD_REQUEST,
 					message: "Infinite list loaded all"
-				};
+				}
 			}
 			return {
 				code: httpStatus.OK,
@@ -91,12 +97,19 @@ module.exports = {
 				.skip(page * page_size - page_size)
 				.limit(page_size)
 				.sort({ _id: "desc" })
+				.populate("idUser")
 				.populate("mentions.idUser");
-			if (postsById.length === 0) {
+			if (postsById.length === 0 && page === 1) {
+				return {
+					code: httpStatus.OK,
+					postsById
+				};
+			}
+			else if(postsById.length === 0) {
 				return {
 					code: httpStatus.BAD_REQUEST,
 					message: "Infinite list loaded all"
-				};
+				}
 			}
 			return {
 				code: httpStatus.OK,

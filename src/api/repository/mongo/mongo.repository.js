@@ -5,7 +5,6 @@ const postCollection = require('./collection/post.collection');
 const chatCollection = require('./collection/chat.collection');
 const roomCollection = require('./collection/room.collection');
 const userChatCollection = require('./collection/userChat.collection');
-const statusChatCollection = require('./collection/statusChat.collection');
 const joinChatCollection = require('./collection/joinChat.collection');
 
 const connectDB = () => {
@@ -27,7 +26,6 @@ module.exports = {
 	chatCollection,
 	roomCollection,
 	userChatCollection,
-	statusChatCollection,
 	joinChatCollection,
 	connectDB
 }
