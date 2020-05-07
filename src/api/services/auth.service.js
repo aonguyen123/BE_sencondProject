@@ -72,7 +72,13 @@ module.exports = {
 				_id: checkUser._id,
 				email: checkUser.email,
 				displayName: checkUser.displayName,
-				photoURL: checkUser.photoURL
+				photoURL: checkUser.photoURL,
+				birthday: checkUser.birthday,
+				description: checkUser.description,
+				district: checkUser.district,
+				gender: checkUser.gender,
+				phonenumber: checkUser.phonenumber,
+				provinceOrCity: checkUser.provinceOrCity
 			};
 			const accessToken = await generateToken(
 				userData,
@@ -88,7 +94,7 @@ module.exports = {
 				code: httpStatus.OK,
 				accessToken,
 				refreshToken,
-				_id: checkUser._id,
+				user: checkUser,
 				message: 'Login success'
 			};
 		} catch (e) {
