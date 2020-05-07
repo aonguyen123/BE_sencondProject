@@ -8,6 +8,7 @@ const generateToken = (user, secretSignature, tokenLife) => {
 				expiresIn: tokenLife
 			}, (err, token) => {
 				if (err) {
+					console.log('loiooooo')
 					return reject(err);
 				}
 				resolve(token);

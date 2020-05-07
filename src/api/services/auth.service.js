@@ -107,8 +107,9 @@ module.exports = {
 	refreshToken: async refreshToken => {
 		try {
 			const decoded = await verifyToken(refreshToken, refreshTokenSecret);
+			const { iat, exp, ...rest } = decoded;
 			const accessToken = await generateToken(
-				decoded,
+				rest,
 				accessTokenSecret,
 				accessTokenLife
 			);
