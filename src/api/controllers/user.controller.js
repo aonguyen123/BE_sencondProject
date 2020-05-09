@@ -56,4 +56,20 @@ exports.fetchUserById = async (req, res, next) => {
 	} catch (error) {
 		next(error);
 	}
+};
+exports.updatePhotoURL = async (req, res, next) => {
+	try {
+		const { photoURL, idUser } = req.body;
+
+		const response = await userService.updatePhotoURL(photoURL, idUser);
+		const { code, ...rest } = response;
+		if(code === httpStatus.INTERNAL_SERVER_ERROR) {
+			return res.status(500).json(rest);
+		}
+		if(code === httpStatus.OK) {
+			return res.status(200).json(rest);
+		}
+	} catch (error) {
+		next(error);
+	}
 }

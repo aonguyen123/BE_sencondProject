@@ -53,5 +53,19 @@ module.exports = {
 				message: 'Fetch user fail. Server error, please again!!!'
 			};
 		}
+	},
+	updatePhotoURL: async (photoURL, idUser) => {
+		try {
+			await userCollection.findByIdAndUpdate(idUser, {photoURL});
+			return {
+				code: httpStatus.OK,
+				photoURL
+			}
+		} catch (error) {
+			return {
+				code: httpStatus.INTERNAL_SERVER_ERROR,
+				message: 'Update photo fail. Server error, please again!!!'
+			};
+		}
 	}
 };

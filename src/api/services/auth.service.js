@@ -115,7 +115,8 @@ module.exports = {
 			);
 			return {
 				code: httpStatus.OK,
-				accessToken
+				accessToken,
+				payload: rest
 			};
 		} catch (e) {
 			return {
@@ -127,9 +128,11 @@ module.exports = {
 		try {
 			const secretToken = process.env.JWT_SECRET || 'access-token-secret-aonguyen';
 			const decoded = await verifyToken(accessToken, secretToken);
+			const userInfo = await userCollection.findById(decoded._id);
+
 			return {
 				code: httpStatus.OK,
-				payload: decoded
+				payload: userInfo
 			}
 		} catch (error) {
 			return {
