@@ -81,19 +81,22 @@ async function updateJoinRoom(idUser, idRoom, socketid) {
 	return;
 }
 async function unJoinRoom(idUser, idRoom, socketid) {
-	idUser = mongoose.Types.ObjectId(idUser);
-	idRoom = mongoose.Types.ObjectId(idRoom);
-	const doc = await joinChatCollection.updateOne(
-		{ idUser, idRoom },
-		{ status: "offline", socketid }
-	);
-	if (doc) {
-		const join = await joinChatCollection
-			.findOne({ idUser, idRoom })
-			.populate("idUser", "displayName photoURL");
-		return join;
+	try {
+		idUser = mongoose.Types.ObjectId(idUser);
+		idRoom = mongoose.Types.ObjectId(idRoom);
+		const doc = await joinChatCollection.updateOne(
+			{ idUser, idRoom },
+			{ status: "offline", socketid }
+		);
+		if (doc) {
+			const join = await joinChatCollection
+				.findOne({ idUser, idRoom })
+				.populate("idUser", "displayName photoURL");
+			return join;
+		}
+	} catch (error) {
+		return;
 	}
-	return;
 }
 async function disconnect(socketid) {
 	const doc = await joinChatCollection.updateOne(

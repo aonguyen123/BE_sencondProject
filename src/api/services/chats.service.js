@@ -11,7 +11,7 @@ module.exports = {
 		try {
 			const rooms = await roomCollection
 				.find()
-				.populate("userId", "displayName");
+				.populate("userId", "displayName").sort({_id: 'asc'});
 			return {
 				code: httpStatus.OK,
 				rooms,

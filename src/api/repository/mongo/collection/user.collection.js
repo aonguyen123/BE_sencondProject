@@ -17,11 +17,11 @@ const userSchema = new Schema({
 		default: ''
 	},
 	provinceOrCity: {
-		type: String,
+		type: Object,
 		default: ''
 	},
 	district: {
-		type: String,
+		type: Object,
 		default: ''
 	},
 	phonenumber: {

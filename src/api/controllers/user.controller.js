@@ -7,10 +7,7 @@ exports.searchUser = async (req, res, next) => {
 		if (q) {
 			const response = await userService.searchUser(q);
 			const { code, ...rest } = response;
-			if (code === httpStatus.OK) {
-				return res.status(httpStatus.OK).json(rest);
-			}
-			return res.status(httpStatus.INTERNAL_SERVER_ERROR).json(rest);
+			return res.status(code).json(rest);
 		}
 	} catch (e) {
 		next(e);
@@ -29,12 +26,7 @@ exports.fetchUser = async (req, res, next) => {
 		}
 		const response = await userService.fetchUser(id);
 		const { code, ...rest } = response;
-		if (code === httpStatus.INTERNAL_SERVER_ERROR) {
-			return res.status(httpStatus.INTERNAL_SERVER_ERROR).json(rest);
-		}
-		if (code === httpStatus.OK) {
-			return res.status(httpStatus.OK).json(rest);
-		}
+		return res.status(code).json(rest);
 	} catch (e) {
 		next(e);
 	}
@@ -44,15 +36,7 @@ exports.fetchUserById = async (req, res, next) => {
 		const { id } = req.params;
 		const response = await userService.fetchUserById(id);
 		const { code, ...rest } = response;
-		if (code === httpStatus.INTERNAL_SERVER_ERROR) {
-			return res.status(500).json(rest);
-		}
-		if (code === httpStatus.OK) {
-			return res.status(200).json(rest);
-		}
-		if(code === httpStatus.BAD_REQUEST) {
-			return res.status(400).json(rest);
-		}
+		return res.status(code).json(rest);
 	} catch (error) {
 		next(error);
 	}
@@ -63,12 +47,27 @@ exports.updatePhotoURL = async (req, res, next) => {
 
 		const response = await userService.updatePhotoURL(photoURL, idUser);
 		const { code, ...rest } = response;
-		if(code === httpStatus.INTERNAL_SERVER_ERROR) {
-			return res.status(500).json(rest);
-		}
-		if(code === httpStatus.OK) {
-			return res.status(200).json(rest);
-		}
+		return res.status(code).json(rest);
+	} catch (error) {
+		next(error);
+	}
+};
+exports.updateProfile = async (req, res, next) => {
+	try {
+		const { data, idUser } = req.body;
+		const response = await userService.updateProfile(data, idUser);
+		const { code, ...rest } = response;
+		return res.status(code).json(rest);
+	} catch (error) {
+		next(error)
+	}
+};
+exports.updatePassword = async (req, res, next) => {
+	try {
+		const { newPass, oldPass, idUser } = req.body;
+		const response = await userService.updatePassword(newPass, oldPass, idUser);
+		const { code, ...rest } = response;
+		return res.status(code).json(rest);
 	} catch (error) {
 		next(error);
 	}

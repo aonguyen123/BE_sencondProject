@@ -6,5 +6,7 @@ router.route('/search-user').get(authMiddleware, userController.searchUser);
 router.route('/fetch-user/:id').get(authMiddleware, userController.fetchUser);
 router.route('/fetch-user-by-id/:id').get(authMiddleware, userController.fetchUserById);
 router.route('/updatePhotoURL').post(authMiddleware, userController.updatePhotoURL);
+router.route('/updateProfile').post(authMiddleware, userController.updateProfile);
+router.route('/updatePass').post(authMiddleware, userController.updatePassword);
 
 module.exports = router;

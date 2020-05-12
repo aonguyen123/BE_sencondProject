@@ -113,14 +113,17 @@ module.exports = {
 				accessTokenSecret,
 				accessTokenLife
 			);
+			const userInfo = await userCollection.findById(decoded._id);
+
 			return {
 				code: httpStatus.OK,
 				accessToken,
-				payload: rest
+				payload: userInfo
 			};
 		} catch (e) {
 			return {
-				code: httpStatus.UNAUTHORIZED
+				code: httpStatus.UNAUTHORIZED,
+				message: 'Unauthorized'
 			};
 		}
 	},
