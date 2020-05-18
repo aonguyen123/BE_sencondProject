@@ -18,14 +18,14 @@ const postSchema = new Schema({
 			type: String
 		}
 	},
-	mentions:
-	{
-		type: Array,
-		idUser: {
-			type: Schema.Types.ObjectId,
-			ref: 'UserCollection',
+	mentions: [
+		{
+			idUser: {
+				type: Schema.Types.ObjectId,
+				ref: 'UserCollection',
+			}
 		}
-	},
+	],
 	likes: {
 		type: Array,
 		idUser: {

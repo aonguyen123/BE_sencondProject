@@ -121,12 +121,12 @@ module.exports = {
 	},
 	likePost: async (idUser, idPost) => {
 		try {
-			const checkDislike = await postCollection.findOne({_id: idPost, dislikes: {$elemMatch: {idUser}}});
+			const checkDislike = await postCollection.findOne({_id: idPost, dislikes: {$elemMatch: {idUser}}}).populate('idUser', 'displayName photoURL').populate("mentions.idUser", 'displayName photoURL');
 			if(checkDislike === null) {
 				const checkLike = await postCollection.findOne({
 					_id: idPost,
 					likes: { $elemMatch: { idUser } },
-				});
+				}).populate('idUser', 'displayName photoURL').populate("mentions.idUser", 'displayName photoURL');
 				if (checkLike === null) {
 					await postCollection.findByIdAndUpdate(idPost, {
 						$push: { likes: { idUser } },
@@ -135,12 +135,21 @@ module.exports = {
 					const index = checkLike.likes.findIndex(l => l.idUser === idUser);
 					checkLike.likes.splice(index, 1);
 					await checkLike.save();
+					return {
+						code: httpStatus.OK,
+						post: checkLike,
+						message: 'UNLIKE'
+					};
 				}
 			} else {
 				const index = checkDislike.dislikes.findIndex(dl => dl.idUser === idUser);
 				checkDislike.dislikes.splice(index, 1);
 				checkDislike.likes.push({idUser});
 				await checkDislike.save();
+				return {
+					code: httpStatus.OK,
+					post: checkDislike
+				};
 			}
 
 			const post = await postCollection
@@ -160,12 +169,12 @@ module.exports = {
 	},
 	dislikePost: async (idUser, idPost) => {
 		try {
-			const checkLike = await postCollection.findOne({_id: idPost, likes: {$elemMatch: {idUser}}});
+			const checkLike = await postCollection.findOne({_id: idPost, likes: {$elemMatch: {idUser}}}).populate('idUser', 'displayName photoURL').populate("mentions.idUser", 'displayName photoURL');
 			if(checkLike === null) {
 				const checkDislike = await postCollection.findOne({
 					_id: idPost,
 					dislikes: { $elemMatch: { idUser } },
-				});
+				}).populate('idUser', 'displayName photoURL').populate("mentions.idUser", 'displayName photoURL');
 				if (checkDislike === null) {
 					await postCollection.findByIdAndUpdate(idPost, {
 						$push: { dislikes: { idUser } },
@@ -174,12 +183,21 @@ module.exports = {
 					const index = checkDislike.dislikes.findIndex(dl => dl.idUser === idUser);
 					checkDislike.dislikes.splice(index, 1);
 					await checkDislike.save();
+					return {
+						code: httpStatus.OK,
+						post: checkDislike,
+						message: 'UNDISLIKE'
+					};
 				}
 			} else {
 				const index = checkLike.likes.findIndex(l => l.idUser === idUser);
 				checkLike.likes.splice(index, 1);
 				checkLike.dislikes.push({idUser});
 				await checkLike.save();
+				return {
+					code: httpStatus.OK,
+					post: checkLike
+				};
 			}
 
 			const post = await postCollection
