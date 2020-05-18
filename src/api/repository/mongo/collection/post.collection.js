@@ -11,25 +11,50 @@ const postSchema = new Schema({
 		type: String,
 		default: ''
 	},
-	images: [
-		{
-			url: {
-				type: String
-			}
+	images:
+	{
+		type: Array,
+		url: {
+			type: String
 		}
-	],
-	mentions: [
-		{
-			idUser: {
-				type: Schema.Types.ObjectId,
-				ref: 'UserCollection',
-			}
+	},
+	mentions:
+	{
+		type: Array,
+		idUser: {
+			type: Schema.Types.ObjectId,
+			ref: 'UserCollection',
 		}
-	]
+	},
+	likes: {
+		type: Array,
+		idUser: {
+			type: Schema.Types.ObjectId,
+			ref: 'UserCollection'
+		}
+	}
+	,
+	dislikes: {
+		type: Array,
+		idUser: {
+			type: Schema.Types.ObjectId,
+			ref: 'UserCollection'
+		}
+	}
+	,
+	comments: {
+		type: Array,
+		idUser: {
+			type: Schema.Types.ObjectId,
+			ref: 'UserCollection'
+		}
+	}
 });
-
 postSchema.set('timestamps', true);
-postSchema.index({content: 'text'});
+postSchema.index({idUser: 1}, {name: "query_for_post_by_idUser"});
+postSchema.index({'likes.idUser': 1}, {name: 'query_for_like'});
+postSchema.index({'dislikes.idUser': 1}, {name: 'query_for_dislike'});
 
 const postCollection = mongoose.model('PostCollection', postSchema);
+
 module.exports = postCollection;

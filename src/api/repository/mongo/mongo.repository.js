@@ -6,6 +6,7 @@ const chatCollection = require('./collection/chat.collection');
 const roomCollection = require('./collection/room.collection');
 const userChatCollection = require('./collection/userChat.collection');
 const joinChatCollection = require('./collection/joinChat.collection');
+const commentCollection = require('./collection/comments.collection');
 
 const connectDB = () => {
 	mongoose.connect(databaseURL, {
@@ -27,5 +28,6 @@ module.exports = {
 	roomCollection,
 	userChatCollection,
 	joinChatCollection,
+	commentCollection,
 	connectDB
 }

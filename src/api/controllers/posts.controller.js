@@ -40,3 +40,23 @@ exports.fetchPostById = async (req, res, next) => {
 		next(e);
 	}
 };
+exports.likePost = async (req, res, next) => {
+	try {
+		const { idUser, idPost } = req.body;
+		const response = await postService.likePost(idUser, idPost);
+		const { code, ...rest } = response;
+		return res.status(code).json(rest);
+	} catch (error) {
+		next(error);
+	}
+};
+exports.dislikePost = async (req, res, next) => {
+	try {
+		const { idUser, idPost } = req.body;
+		const response = await postService.dislikePost(idUser, idPost);
+		const { code, ...rest } = response;
+		return res.status(code).json(rest);
+	} catch (error) {
+		next(error);
+	}
+}

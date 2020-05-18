@@ -14,6 +14,7 @@ const chatSchema = new Schema({
 	}
 });
 chatSchema.set('timestamps', true);
+chatSchema.index({idRoom: 1}, {name: 'query_for_get_message_by_idRoom'});
 
 const chatCollection = mongoose.model('ChatCollection', chatSchema);
 module.exports = chatCollection;

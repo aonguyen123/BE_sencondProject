@@ -28,4 +28,16 @@ exports.checkJoinRoom = async (req, res, next) => {
 	} catch (error) {
 		next(error);
 	}
+};
+exports.fetchMessageRoom = async (req, res, next) => {
+	try {
+		const { idRoom, page, page_size } = req.params;
+		console.log(idRoom, page_size, page);
+
+		// const response = await chatsService.checkJoinRoom(idRoom, idUser);
+		// const { code, ...rest } = response;
+		// return res.status(code).json(rest);
+	} catch (error) {
+		next(error)
+	}
 }

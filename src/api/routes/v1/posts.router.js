@@ -9,5 +9,7 @@ router
 router
 	.route("/fetch-post-by-id/:id/page=:page&page_size=:page_size")
 	.get(authMiddleware, postsController.fetchPostById);
+router.route('/likePost').post(authMiddleware, postsController.likePost);
+router.route('/dislikePost').post(authMiddleware, postsController.dislikePost);
 
 module.exports = router;

@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const httpStatus = require("http-status");
 const {
 	roomCollection,
 	chatCollection,
-	joinChatCollection
+	joinChatCollection,
 } = require("./../repository");
 
 module.exports = {
@@ -11,7 +11,8 @@ module.exports = {
 		try {
 			const rooms = await roomCollection
 				.find()
-				.populate("userId", "displayName").sort({_id: 'asc'});
+				.populate("userId", "displayName")
+				.sort({ _id: 1 });
 			return {
 				code: httpStatus.OK,
 				rooms,
@@ -27,7 +28,8 @@ module.exports = {
 		try {
 			const chats = await chatCollection
 				.find({ idRoom: null })
-				.populate("sender", "displayName photoURL").sort({_id: 'asc'});
+				.populate("sender", "displayName photoURL")
+				.sort({ _id: 1 });
 			return {
 				code: httpStatus.OK,
 				chats,
@@ -44,23 +46,30 @@ module.exports = {
 			idUser = mongoose.Types.ObjectId(idUser);
 			idRoom = mongoose.Types.ObjectId(idRoom);
 			const joined = await joinChatCollection.findOne({ idUser, idRoom });
-			if(joined) {
-				const userRoom = await joinChatCollection.find({idRoom}).populate('idUser', 'displayName photoURL');
-				const messageRoom = await chatCollection.find({idRoom}).populate('sender', 'displayName photoURL').sort({_id: 'asc'});
-				const room = await roomCollection.findById(idRoom, 'roomName roomImage').populate('userId', 'displayName');
+			if (joined) {
+				const userRoom = await joinChatCollection
+					.find({ idRoom })
+					.populate("idUser", "displayName photoURL");
+				const messageRoom = await chatCollection
+					.find({ idRoom })
+					.populate("sender", "displayName photoURL")
+					.sort({ _id: 1 });
+				const room = await roomCollection
+					.findById(idRoom, "roomName roomImage")
+					.populate("userId", "displayName");
 				return {
 					code: httpStatus.OK,
-					data: { userRoom, messageRoom, room }
-				}
+					data: { userRoom, messageRoom, room },
+				};
 			}
 			return {
 				code: httpStatus.BAD_REQUEST,
-				message: 'You haven`t joined the room yet'
+				message: "You haven`t joined the room yet",
 			};
 		} catch (error) {
 			return {
 				code: httpStatus.BAD_REQUEST,
-				message: 'You haven`t joined the room yet'
+				message: "You haven`t joined the room yet",
 			};
 		}
 	},

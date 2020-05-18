@@ -34,7 +34,7 @@ const userSchema = new Schema({
 	}
 })
 userSchema.set('timestamps', true);
-userSchema.index({nickname: 'text'});
+userSchema.index({searchUser: -1}, {name: 'search_user'});
 
 const userCollection = mongoose.model('UserCollection', userSchema);
 module.exports = userCollection;
