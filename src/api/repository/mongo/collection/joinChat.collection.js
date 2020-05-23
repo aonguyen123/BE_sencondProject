@@ -15,6 +15,7 @@ const joinChatSchema = new Schema({
 	status: String
 });
 joinChatSchema.set('timestamps', true);
+joinChatSchema.index({idUser: 1, idRoom: -1}, {name: 'query_join_room'});
 
 const joinChatCollection = mongoose.model('JoinChatCollection', joinChatSchema);
 module.exports = joinChatCollection;

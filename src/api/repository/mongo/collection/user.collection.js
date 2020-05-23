@@ -31,6 +31,10 @@ const userSchema = new Schema({
 	description: {
 		type: String,
 		default: ''
+	},
+	interests: {
+		type: Array,
+		label: String
 	}
 })
 userSchema.set('timestamps', true);

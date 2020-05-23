@@ -8,5 +8,7 @@ router.route('/fetch-user-by-id/:id').get(authMiddleware, userController.fetchUs
 router.route('/updatePhotoURL').post(authMiddleware, userController.updatePhotoURL);
 router.route('/updateProfile').post(authMiddleware, userController.updateProfile);
 router.route('/updatePass').post(authMiddleware, userController.updatePassword);
+router.route('/updateInterest').post(authMiddleware, userController.updateInterest);
+router.route('/removeInterest').post(authMiddleware, userController.removeInterest);
 
 module.exports = router;

@@ -72,3 +72,23 @@ exports.updatePassword = async (req, res, next) => {
 		next(error);
 	}
 }
+exports.updateInterest = async (req, res, next) => {
+	try {
+		const { interest, idUser } = req.body;
+		const response = await userService.updateInterest(interest, idUser);
+		const { code, ...rest } = response;
+		return res.status(code).json(rest);
+	} catch (error) {
+		next(error);
+	}
+}
+exports.removeInterest = async (req, res, next) => {
+	try {
+		const { interest, idUser } = req.body;
+		const response = await userService.removeInterest(interest, idUser);
+		const { code, ...rest } = response;
+		return res.status(code).json(rest);
+	} catch (error) {
+		next(error);
+	}
+}

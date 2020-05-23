@@ -25,7 +25,17 @@ module.exports = {
 	fetchCommentByIdPost: async idPost => {
 		try {
 			const comments = await commentCollection.find({idPost}).populate('idUser', 'displayName photoURL').sort({_id: 1});
-			const post = await postCollection.findById(idPost).populate('idUser', 'displayName photoURL').populate("mentions.idUser");
+			const post = await postCollection.findById(idPost).populate('idUser', 'displayName photoURL').populate("mentions.idUser")
+							.populate('likes.idUser', 'displayName photoURL').populate('dislikes.idUser', 'displayName photoURL');
+
+			if(!post) {
+				return {
+					code: httpStatus.BAD_REQUEST,
+					message: [
+						'ID post wrong, please try id post other'
+					]
+				}
+			}
 			return {
 				code: httpStatus.OK,
 				comments,
@@ -34,7 +44,10 @@ module.exports = {
 		} catch (error) {
 			return {
 				code: httpStatus.INTERNAL_SERVER_ERROR,
-				message: 'Fetch comment fail, try again !'
+				message: [
+					'ID post wrong, please try id post other',
+					'Server response timed out, please check network and try again',
+				]
 			}
 		}
 	}

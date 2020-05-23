@@ -6,6 +6,7 @@ const { comparePassword, hashPassword } = require('./../helpers/password.helper'
 module.exports = {
 	searchUser: async q => {
 		try {
+			q = q.toLowerCase();
 			const data = await userCollection.find({
 				searchUser: { $regex: ".*" + q + ".*" }
 			});
@@ -46,12 +47,17 @@ module.exports = {
 			}
 			return {
 				code: httpStatus.BAD_REQUEST,
-				message: 'User not found'
+				message: [
+					'User not found'
+				]
 			}
 		} catch (error) {
 			return {
 				code: httpStatus.INTERNAL_SERVER_ERROR,
-				message: 'Fetch user fail. Server error, please again!!!'
+				message: [
+					'ID user wrong, please try id user other',
+					'Server response timed out, please check network and try again',
+				]
 			};
 		}
 	},
@@ -122,6 +128,34 @@ module.exports = {
 			return {
 				code: httpStatus.INTERNAL_SERVER_ERROR,
 				message: 'Update password fail. Server error, please again!!!'
+			};
+		}
+	},
+	updateInterest: async (interest, idUser) => {
+		try {
+			await userCollection.findByIdAndUpdate(idUser, {$push: {interests: {label: interest}}});
+			return {
+				code: httpStatus.OK,
+				interest: {label: interest}
+			}
+		} catch (error) {
+			return {
+				code: httpStatus.INTERNAL_SERVER_ERROR,
+				message: 'Create interest fail. Server error, please again!!!'
+			};
+		}
+	},
+	removeInterest: async (interest, idUser) => {
+		try {
+			await userCollection.findByIdAndUpdate(idUser, {$pull: {interests: {label: interest}}});
+			return {
+				code: httpStatus.OK,
+				interest: {label: interest}
+			}
+		} catch (error) {
+			return {
+				code: httpStatus.INTERNAL_SERVER_ERROR,
+				message: 'Remove interest fail. Server error, please again!!!'
 			};
 		}
 	}

@@ -3,6 +3,7 @@ const httpStatus = require("http-status");
 const { userCollection } = require("./../repository");
 const { hashPassword, comparePassword } = require("../helpers/password.helper");
 const { generateToken, verifyToken } = require("./../helpers/jwt.helper");
+const convertVie = require('./../utils/convertVie');
 
 const accessTokenLife = process.env.JWT_EXPIRES_IN;
 const accessTokenSecret = process.env.JWT_SECRET;
@@ -21,7 +22,15 @@ module.exports = {
 					message: "Email existed"
 				};
 			}
-			const searchUser = nickname.replace(/\s+/g, '');
+			const searchUser = convertVie(nickname);
+			const checkSearchUser = await userCollection.findOne({searchUser});
+			if(checkSearchUser) {
+				return {
+					code: httpStatus.BAD_REQUEST,
+					message: 'Nick name existed'
+				}
+			}
+
 			const newUser = new userCollection({
 				_id: new mongoose.Types.ObjectId(),
 				email,

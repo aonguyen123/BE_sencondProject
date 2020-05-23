@@ -41,7 +41,7 @@ module.exports = {
 			}
 			return {
 				code: httpStatus.OK,
-				message: "Create post success",
+				message: "Create post success"
 			};
 		} catch (e) {
 			return {
@@ -59,18 +59,17 @@ module.exports = {
 				.find()
 				.skip(page * page_size - page_size)
 				.limit(page_size)
-				.sort({ _id: "desc" })
+				.sort({ _id: -1 })
 				.populate("idUser", 'displayName photoURL')
-				.populate("mentions.idUser", 'displayName photoURL');
-			if (posts.length === 0 && page === 1) {
+				.populate("mentions.idUser", 'displayName photoURL')
+				.populate('likes.idUser', 'displayName photoURL')
+				.populate('dislikes.idUser', 'displayName photoURL');
+
+			if (posts.length < page_size) {
 				return {
 					code: httpStatus.OK,
+					message: 'LOADED ALL',
 					posts,
-				};
-			} else if (posts.length === 0) {
-				return {
-					code: httpStatus.BAD_REQUEST,
-					message: "Infinite list loaded all",
 				};
 			}
 			return {
@@ -96,16 +95,14 @@ module.exports = {
 				.limit(page_size)
 				.sort({ _id: "desc" })
 				.populate("idUser", 'displayName photoURL')
-				.populate("mentions.idUser", 'displayName photoURL');
-			if (postsById.length === 0 && page === 1) {
+				.populate("mentions.idUser", 'displayName photoURL')
+				.populate('likes.idUser', 'displayName photoURL')
+				.populate('dislikes.idUser', 'displayName photoURL');
+			if (postsById.length < page_size) {
 				return {
 					code: httpStatus.OK,
-					postsById,
-				};
-			} else if (postsById.length === 0) {
-				return {
-					code: httpStatus.BAD_REQUEST,
-					message: "Infinite list loaded all",
+					message: "LOADED ALL",
+					postsById
 				};
 			}
 			return {
@@ -115,24 +112,29 @@ module.exports = {
 		} catch (e) {
 			return {
 				code: httpStatus.INTERNAL_SERVER_ERROR,
-				message: "Fetch post by id fail. Server error, please again!!!",
+				message: [
+					'ID user wrong, please try id user other',
+					'Server response timed out, please check network and try again',
+				],
 			};
 		}
 	},
 	likePost: async (idUser, idPost) => {
 		try {
-			const checkDislike = await postCollection.findOne({_id: idPost, dislikes: {$elemMatch: {idUser}}}).populate('idUser', 'displayName photoURL').populate("mentions.idUser", 'displayName photoURL');
+			const checkDislike = await postCollection.findOne({_id: idPost, dislikes: {$elemMatch: {idUser}}});
 			if(checkDislike === null) {
 				const checkLike = await postCollection.findOne({
 					_id: idPost,
 					likes: { $elemMatch: { idUser } },
-				}).populate('idUser', 'displayName photoURL').populate("mentions.idUser", 'displayName photoURL');
+				}).populate('idUser', 'displayName photoURL').populate("mentions.idUser", 'displayName photoURL')
+				.populate('likes.idUser', 'displayName photoURL')
+				.populate('dislikes.idUser', 'displayName photoURL');
 				if (checkLike === null) {
 					await postCollection.findByIdAndUpdate(idPost, {
 						$push: { likes: { idUser } },
 					});
 				} else {
-					const index = checkLike.likes.findIndex(l => l.idUser === idUser);
+					const index = checkLike.likes.findIndex(l => l.idUser._id === idUser);
 					checkLike.likes.splice(index, 1);
 					await checkLike.save();
 					return {
@@ -146,16 +148,14 @@ module.exports = {
 				checkDislike.dislikes.splice(index, 1);
 				checkDislike.likes.push({idUser});
 				await checkDislike.save();
-				return {
-					code: httpStatus.OK,
-					post: checkDislike
-				};
 			}
 
 			const post = await postCollection
 				.findById(idPost)
 				.populate("idUser", "displayName photoURL")
-				.populate("mentions.idUser", 'displayName photoURL');
+				.populate("mentions.idUser", 'displayName photoURL')
+				.populate('likes.idUser', 'displayName photoURL')
+				.populate('dislikes.idUser', 'displayName photoURL');
 			return {
 				code: httpStatus.OK,
 				post
@@ -169,12 +169,14 @@ module.exports = {
 	},
 	dislikePost: async (idUser, idPost) => {
 		try {
-			const checkLike = await postCollection.findOne({_id: idPost, likes: {$elemMatch: {idUser}}}).populate('idUser', 'displayName photoURL').populate("mentions.idUser", 'displayName photoURL');
+			const checkLike = await postCollection.findOne({_id: idPost, likes: {$elemMatch: {idUser}}});
 			if(checkLike === null) {
 				const checkDislike = await postCollection.findOne({
 					_id: idPost,
 					dislikes: { $elemMatch: { idUser } },
-				}).populate('idUser', 'displayName photoURL').populate("mentions.idUser", 'displayName photoURL');
+				}).populate('idUser', 'displayName photoURL').populate("mentions.idUser", 'displayName photoURL')
+				.populate('likes.idUser', 'displayName photoURL')
+				.populate('dislikes.idUser', 'displayName photoURL');;
 				if (checkDislike === null) {
 					await postCollection.findByIdAndUpdate(idPost, {
 						$push: { dislikes: { idUser } },
@@ -194,16 +196,14 @@ module.exports = {
 				checkLike.likes.splice(index, 1);
 				checkLike.dislikes.push({idUser});
 				await checkLike.save();
-				return {
-					code: httpStatus.OK,
-					post: checkLike
-				};
 			}
 
 			const post = await postCollection
 					.findById(idPost)
 					.populate("idUser", "displayName photoURL")
-					.populate("mentions.idUser", 'displayName photoURL');
+					.populate("mentions.idUser", 'displayName photoURL')
+					.populate('likes.idUser', 'displayName photoURL')
+					.populate('dislikes.idUser', 'displayName photoURL');
 			return {
 				code: httpStatus.OK,
 				post
