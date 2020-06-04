@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 const httpStatus = require("http-status");
-const { userCollection } = require("./../repository");
+const { userCollection, eventCollection } = require("./../repository");
 const { comparePassword, hashPassword } = require('./../helpers/password.helper');
 
 module.exports = {
-	searchUser: async q => {
+	searchMentions: async q => {
 		try {
 			q = q.toLowerCase();
 			const data = await userCollection.find({
@@ -23,7 +23,7 @@ module.exports = {
 	},
 	fetchUser: async idUser => {
 		try {
-			const userData = await userCollection.findById(idUser);
+			const userData = await userCollection.findById(idUser).populate('friends.idUser', 'displayName photoURL');
 			return {
 				code: httpStatus.OK,
 				userData
@@ -35,21 +35,20 @@ module.exports = {
 			};
 		}
 	},
-	fetchUserById: async idUser => {
+	fetchUserById: async (idUser, idCur) => {
 		try {
-			idUser = mongoose.Types.ObjectId(idUser);
-			const user = await userCollection.findById(idUser);
-			if(user) {
+			const user = await userCollection.findById(idUser).populate('friends.idUser', 'displayName photoURL');
+			if(!user) {
 				return {
-					code: httpStatus.OK,
-					user
+					code: httpStatus.BAD_REQUEST,
+					message: ['ID user wrong, please try id user other',]
 				}
 			}
+			const checkAddFriend = await eventCollection.findOne({idSender: idCur, idReceiver: idUser, type: 'ADD_FRIEND', status: 0});
 			return {
-				code: httpStatus.BAD_REQUEST,
-				message: [
-					'User not found'
-				]
+				code: httpStatus.OK,
+				user,
+				statusAddFriend: checkAddFriend ? true : false
 			}
 		} catch (error) {
 			return {
@@ -156,6 +155,23 @@ module.exports = {
 			return {
 				code: httpStatus.INTERNAL_SERVER_ERROR,
 				message: 'Remove interest fail. Server error, please again!!!'
+			};
+		}
+	},
+	searchUser: async (q, idUser) => {
+		try {
+			q = q.toLowerCase();
+			const users = await userCollection.find({
+				_id: {$ne: idUser}, searchUser: { $regex: ".*" + q + ".*" }
+			}, 'displayName photoURL');
+			return {
+				code: httpStatus.OK,
+				users
+			};
+		} catch (error) {
+			return {
+				code: httpStatus.INTERNAL_SERVER_ERROR,
+				message: 'Search user fail. Server error, please again!!!'
 			};
 		}
 	}

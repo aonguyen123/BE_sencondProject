@@ -62,7 +62,7 @@ module.exports = {
 		try {
 			const checkUser = await userCollection.findOne({
 				email: user.email
-			});
+			}).populate('friends.idUser', 'displayName photoURL');
 			if (!checkUser) {
 				return {
 					message: "User not found",
@@ -122,7 +122,7 @@ module.exports = {
 				accessTokenSecret,
 				accessTokenLife
 			);
-			const userInfo = await userCollection.findById(decoded._id);
+			const userInfo = await userCollection.findById(decoded._id).populate('friends.idUser', 'displayName photoURL');
 
 			return {
 				code: httpStatus.OK,
@@ -140,7 +140,7 @@ module.exports = {
 		try {
 			const secretToken = process.env.JWT_SECRET || 'access-token-secret-aonguyen';
 			const decoded = await verifyToken(accessToken, secretToken);
-			const userInfo = await userCollection.findById(decoded._id);
+			const userInfo = await userCollection.findById(decoded._id).populate('friends.idUser', 'displayName photoURL');
 
 			return {
 				code: httpStatus.OK,

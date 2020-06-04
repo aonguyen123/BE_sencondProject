@@ -35,7 +35,15 @@ const userSchema = new Schema({
 	interests: {
 		type: Array,
 		label: String
-	}
+	},
+	friends: [
+		{
+			idUser: {
+				type: Schema.Types.ObjectId,
+				ref: "UserCollection",
+			}
+		}
+	]
 })
 userSchema.set('timestamps', true);
 userSchema.index({searchUser: -1}, {name: 'search_user'});

@@ -4,6 +4,7 @@ const server = require("./config/express.config");
 const { addUserChat, removeUserChat, getUser } = require('./utils/user');
 const { createRoom, joinRoom, updateJoinRoom, unJoinRoom, disconnect, leaveRoom, deleteRoom } = require('./utils/room');
 const { addMessage } = require('./utils/messages');
+const { sendAddFriend, addFriend } = require('./utils/events');
 
 const io = socketio(server);
 
@@ -65,10 +66,32 @@ io.on('connection', socket => {
 			socket.broadcast.to(idRoom).emit('unJoinRoom', doc);
 		}
 	});
+	//add event
+	socket.on('subscribe', (idUser) => {
+		socket.join(idUser);
+		socket.broadcast.emit('subscribe', idUser);
+	});
+
+	socket.on('sendAddFriend', async ({idSender, idReceiver}) => {
+		const { newEvent } = await sendAddFriend(idSender, idReceiver);
+		socket.to(idReceiver).emit('sendEvent', {newEvent});
+		socket.emit('sendAddFriendSuccess', true);
+	});
+
+	socket.on('addFriend', async ({idEvent}) => {
+		const { friendReceiver, friendSender, newEvent } = await addFriend(idEvent);
+		socket.emit('addFriendSuccess', {friendReceiver, idEvent})
+		socket.to(friendReceiver._id).emit('addFriend', {friendSender});
+		socket.to(newEvent.idReceiver).emit('sendEvent', {newEvent});
+	});
+
+	//
 	socket.on('hasLeft', async () => {
 		await removeUserChat(socket.id);
 	})
 	socket.on('disconnect', async () => {
+		socket.leave();
+
 		const doc = await disconnect(socket.id);
 
 		if(doc) {

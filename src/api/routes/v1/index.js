@@ -5,6 +5,7 @@ const weatherRouter = require('./weather.router');
 const postsRouter = require('./posts.router');
 const chatsRouter = require('./chats.router');
 const commentRouter = require('./comment.router');
+const eventsRouter = require('./events.router');
 
 router.get("/status", (req, res) => {
 	res.json({
@@ -21,5 +22,6 @@ router.use('/weather', weatherRouter);
 router.use('/posts', postsRouter);
 router.use('/chats', chatsRouter);
 router.use('/comments', commentRouter);
+router.use('/events', eventsRouter);
 
 module.exports = router;

@@ -1,11 +1,11 @@
 const httpStatus = require("http-status");
 const userService = require("./../services/user.service");
 
-exports.searchUser = async (req, res, next) => {
+exports.searchMentions = async (req, res, next) => {
 	try {
 		const { q } = req.query;
 		if (q) {
-			const response = await userService.searchUser(q);
+			const response = await userService.searchMentions(q);
 			const { code, ...rest } = response;
 			return res.status(code).json(rest);
 		}
@@ -33,8 +33,8 @@ exports.fetchUser = async (req, res, next) => {
 };
 exports.fetchUserById = async (req, res, next) => {
 	try {
-		const { id } = req.params;
-		const response = await userService.fetchUserById(id);
+		const { idUser, idCur } = req.query;
+		const response = await userService.fetchUserById(idUser, idCur);
 		const { code, ...rest } = response;
 		return res.status(code).json(rest);
 	} catch (error) {
@@ -86,6 +86,16 @@ exports.removeInterest = async (req, res, next) => {
 	try {
 		const { interest, idUser } = req.body;
 		const response = await userService.removeInterest(interest, idUser);
+		const { code, ...rest } = response;
+		return res.status(code).json(rest);
+	} catch (error) {
+		next(error);
+	}
+};
+exports.searchUser = async (req, res, next) => {
+	try {
+		const { q, idUser } = req.query;
+		const response = await userService.searchUser(q, idUser);
 		const { code, ...rest } = response;
 		return res.status(code).json(rest);
 	} catch (error) {

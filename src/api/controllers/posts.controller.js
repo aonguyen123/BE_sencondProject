@@ -17,8 +17,8 @@ exports.createPost = async (req, res, next) => {
 };
 exports.fetchPost = async (req, res, next) => {
 	try {
-		const { page, page_size } = req.params;
-		const response = await postService.fetchPost(page, page_size);
+		const { page, page_size, id } = req.params;
+		const response = await postService.fetchPost(page, page_size, id);
 		const { code, ...rest } = response;
 		return res.status(code).json(rest);
 	} catch (e) {
