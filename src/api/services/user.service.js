@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
 const httpStatus = require("http-status");
-const { userCollection, eventCollection } = require("./../repository");
+const { userCollection, eventCollection, settingCollection } = require("./../repository");
 const { comparePassword, hashPassword } = require('./../helpers/password.helper');
+const convertVie = require('./../utils/convertVie');
 
 module.exports = {
 	searchMentions: async q => {
@@ -45,6 +45,10 @@ module.exports = {
 				}
 			}
 			const checkAddFriend = await eventCollection.findOne({idSender: idCur, idReceiver: idUser, type: 'ADD_FRIEND', status: 0});
+			const checkSetting = await settingCollection.findOne({idUser});
+			if(checkSetting && !checkSetting.settingPhone) {
+				user.phonenumber = user.phonenumber.substr(0, 2) + '****' + user.phonenumber.substr(6);
+			}
 			return {
 				code: httpStatus.OK,
 				user,
@@ -76,7 +80,6 @@ module.exports = {
 	},
 	updateProfile: async (data, idUser) => {
 		try {
-			const searchUser = data.nickname.replace(/\s+/g, '');
 			const { value: valProvince, ...province } = data.address.province;
 			const { value: valDistrict, ...district } = data.address.district;
 
@@ -87,6 +90,16 @@ module.exports = {
 					message: 'Email exist'
 				}
 			}
+
+			const searchUser = convertVie(data.nickname);
+			const checkSearchUser = await userCollection.findOne({_id: {$ne: idUser}}).findOne({searchUser});
+			if(checkSearchUser) {
+				return {
+					code: httpStatus.BAD_REQUEST,
+					message: 'Nick name existed'
+				}
+			}
+
 			await userCollection.updateOne({_id: idUser} ,{$set: {
 				email: data.email,
 				displayName: data.nickname,
@@ -172,6 +185,28 @@ module.exports = {
 			return {
 				code: httpStatus.INTERNAL_SERVER_ERROR,
 				message: 'Search user fail. Server error, please again!!!'
+			};
+		}
+	},
+	settingPhone: async (idUser, settingPhone) => {
+		try {
+			const check = await settingCollection.findOne({idUser});
+			if(!check) {
+				const doc = new settingCollection({
+					idUser,
+					settingPhone
+				});
+				await doc.save();
+			} else {
+				await settingCollection.updateOne({idUser}, {settingPhone});
+			}
+			return {
+				code: httpStatus.OK,
+			}
+		} catch (error) {
+			return {
+				code: httpStatus.INTERNAL_SERVER_ERROR,
+				message: 'Setting phone number fail. Server error, please again!!!'
 			};
 		}
 	}

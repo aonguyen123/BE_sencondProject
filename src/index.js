@@ -4,7 +4,7 @@ const server = require("./config/express.config");
 const { addUserChat, removeUserChat, getUser } = require('./utils/user');
 const { createRoom, joinRoom, updateJoinRoom, unJoinRoom, disconnect, leaveRoom, deleteRoom } = require('./utils/room');
 const { addMessage } = require('./utils/messages');
-const { sendAddFriend, addFriend } = require('./utils/events');
+const { sendAddFriend, addFriend, addFriendCancel } = require('./utils/events');
 
 const io = socketio(server);
 
@@ -72,19 +72,30 @@ io.on('connection', socket => {
 		socket.broadcast.emit('subscribe', idUser);
 	});
 
-	socket.on('sendAddFriend', async ({idSender, idReceiver}) => {
-		const { newEvent } = await sendAddFriend(idSender, idReceiver);
-		socket.to(idReceiver).emit('sendEvent', {newEvent});
-		socket.emit('sendAddFriendSuccess', true);
+	socket.on('sendAddFriend', async ({idSender, idReceiver}, callback) => {
+		const { newEvent, error } = await sendAddFriend(idSender, idReceiver);
+		if(error !== null) {
+			callback(error);
+		} else {
+			socket.to(idReceiver).emit('sendEvent', {newEvent});
+			socket.emit('sendAddFriendSuccess', true);
+		}
 	});
 
-	socket.on('addFriend', async ({idEvent}) => {
+	socket.on('addFriend', async ({idEvent}, callback) => {
 		const { friendReceiver, friendSender, newEvent } = await addFriend(idEvent);
 		socket.emit('addFriendSuccess', {friendReceiver, idEvent})
 		socket.to(friendReceiver._id).emit('addFriend', {friendSender});
 		socket.to(newEvent.idReceiver).emit('sendEvent', {newEvent});
+		callback();
 	});
 
+	socket.on('addFriendCancel', async ({idEvent}, callback) => {
+		const { newEvent } = await addFriendCancel(idEvent);
+		socket.emit('addFriendCancel', {idEvent});
+		socket.to(newEvent.idReceiver).emit('sendEvent', {newEvent});
+		callback();
+	});
 	//
 	socket.on('hasLeft', async () => {
 		await removeUserChat(socket.id);

@@ -67,7 +67,7 @@ module.exports = {
 				.limit(page_size)
 				.sort({ _id: -1 })
 				.populate("idUser", 'displayName photoURL')
-				.populate("mentions.idUser", 'displayName photoURL')
+				.populate("mentions.idUser", 'displayName photoURL district provinceOrCity description')
 				.populate('likes.idUser', 'displayName photoURL')
 				.populate('dislikes.idUser', 'displayName photoURL');
 
@@ -101,7 +101,7 @@ module.exports = {
 				.limit(page_size)
 				.sort({ _id: "desc" })
 				.populate("idUser", 'displayName photoURL')
-				.populate("mentions.idUser", 'displayName photoURL')
+				.populate("mentions.idUser", 'displayName photoURL district provinceOrCity description')
 				.populate('likes.idUser', 'displayName photoURL')
 				.populate('dislikes.idUser', 'displayName photoURL');
 			if (postsById.length < page_size) {

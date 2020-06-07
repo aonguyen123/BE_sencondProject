@@ -11,5 +11,6 @@ router.route('/updatePass').post(authMiddleware, userController.updatePassword);
 router.route('/updateInterest').post(authMiddleware, userController.updateInterest);
 router.route('/removeInterest').post(authMiddleware, userController.removeInterest);
 router.route('/search-user').get(authMiddleware, userController.searchUser);
+router.route('/settingPhone').post(authMiddleware, userController.settingPhoneNum);
 
 module.exports = router;

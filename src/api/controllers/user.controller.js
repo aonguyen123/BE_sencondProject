@@ -101,4 +101,14 @@ exports.searchUser = async (req, res, next) => {
 	} catch (error) {
 		next(error);
 	}
+};
+exports.settingPhoneNum = async (req, res, next) => {
+	try {
+		const { idUser, settingPhone } = req.body;
+		const response = await userService.settingPhone(idUser, settingPhone);
+		const { code, ...rest } = response;
+		return res.status(code).json(rest);
+	} catch (error) {
+		next(error);
+	}
 }

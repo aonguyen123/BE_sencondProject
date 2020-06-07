@@ -8,6 +8,7 @@ const userChatCollection = require('./collection/userChat.collection');
 const joinChatCollection = require('./collection/joinChat.collection');
 const commentCollection = require('./collection/comments.collection');
 const eventCollection = require('./collection/event.collection');
+const settingCollection = require('./collection/setting.collection');
 
 const connectDB = () => {
 	mongoose.connect(databaseURL, {
@@ -31,5 +32,6 @@ module.exports = {
 	joinChatCollection,
 	commentCollection,
 	eventCollection,
+	settingCollection,
 	connectDB
 }

@@ -32,11 +32,20 @@ module.exports = {
 			};
 		}
 	},
-	removeAllEvents: async eventType => {
+	removeAllEvents: async (eventType, idCur) => {
 		try {
-			await eventCollection.updateMany({type: eventType}, {status: 1});
+			if(eventType === 'Kết bạn' || eventType === 'Add friends') {
+				eventType = 'ADD_FRIEND';
+			}
+			else if(eventType === 'Thông báo' || eventType === 'Notifications') {
+				eventType = 'NOTIFICATION';
+			}
+			console.log(eventType, idCur)
+
+			await eventCollection.updateMany({type: eventType, idReceiver: idCur}, {status: 1});
 			return {
-				code: httpStatus.OK
+				code: httpStatus.OK,
+				eventType
 			}
 		} catch (error) {
 			return {

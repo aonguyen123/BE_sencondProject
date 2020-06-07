@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const httpStatus = require("http-status");
-const { userCollection } = require("./../repository");
+const { userCollection, settingCollection } = require("./../repository");
 const { hashPassword, comparePassword } = require("../helpers/password.helper");
 const { generateToken, verifyToken } = require("./../helpers/jwt.helper");
 const convertVie = require('./../utils/convertVie');
@@ -99,10 +99,13 @@ module.exports = {
 				refreshTokenSecret,
 				refreshTokenLife
 			);
+			const checkSetting = await settingCollection.findOne({idUser: checkUser._id});
+
 			return {
 				code: httpStatus.OK,
 				accessToken,
 				refreshToken,
+				setting: !checkSetting ? true : checkSetting.settingPhone,
 				user: checkUser,
 				message: 'Login success'
 			};
@@ -123,11 +126,13 @@ module.exports = {
 				accessTokenLife
 			);
 			const userInfo = await userCollection.findById(decoded._id).populate('friends.idUser', 'displayName photoURL');
+			const checkSetting = await settingCollection.findOne({idUser: decoded._id});
 
 			return {
 				code: httpStatus.OK,
 				accessToken,
-				payload: userInfo
+				user: userInfo,
+				setting: !checkSetting ? true : checkSetting.settingPhone,
 			};
 		} catch (e) {
 			return {
@@ -141,10 +146,12 @@ module.exports = {
 			const secretToken = process.env.JWT_SECRET || 'access-token-secret-aonguyen';
 			const decoded = await verifyToken(accessToken, secretToken);
 			const userInfo = await userCollection.findById(decoded._id).populate('friends.idUser', 'displayName photoURL');
+			const checkSetting = await settingCollection.findOne({idUser: decoded._id});
 
 			return {
 				code: httpStatus.OK,
-				payload: userInfo
+				user: userInfo,
+				setting: !checkSetting ? true : checkSetting.settingPhone,
 			}
 		} catch (error) {
 			return {

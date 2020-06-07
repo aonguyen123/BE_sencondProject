@@ -22,8 +22,8 @@ exports.removeEvent = async (req, res, next) => {
 }
 exports.removeAllEvents = async (req, res, next) => {
 	try {
-		const { eventType } = req.body;
-		const response = await eventsService.removeAllEvents(eventType);
+		const { eventType, idCur } = req.body;
+		const response = await eventsService.removeAllEvents(eventType, idCur);
 		const { code, ...rest } = response;
 		return res.status(code).json(rest);
 	} catch (error) {
