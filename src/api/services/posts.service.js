@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const httpStatus = require("http-status");
-const { postCollection, userCollection } = require("./../repository");
+const { postCollection, userCollection, commentCollection } = require("./../repository");
 const { asyncForEach } = require("./../helpers/loop.helper");
 
 module.exports = {
@@ -182,6 +182,36 @@ module.exports = {
 			return {
 				code: httpStatus.INTERNAL_SERVER_ERROR,
 				message: "Dislike fail. Server error, please again!!!",
+			};
+		}
+	},
+	deletePostById: async idPost => {
+		try {
+			await commentCollection.deleteMany({idPost});
+			const postDelete = await postCollection.findByIdAndDelete(idPost);
+
+			return {
+				code: httpStatus.OK,
+				idPost: postDelete._id
+			}
+		} catch (error) {
+			return {
+				code: httpStatus.INTERNAL_SERVER_ERROR,
+				message: "Delete post fail. Server error, please again!!!",
+			};
+		}
+	},
+	fetchPostByIdPost: async idPost => {
+		try {
+			const post = await postCollection.findById(idPost);
+			return {
+				code: httpStatus.OK,
+				post
+			}
+		} catch (error) {
+			return {
+				code: httpStatus.INTERNAL_SERVER_ERROR,
+				message: "Fetch post fail. Server error, please again!!!",
 			};
 		}
 	}

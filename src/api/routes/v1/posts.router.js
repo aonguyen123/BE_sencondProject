@@ -11,5 +11,7 @@ router
 	.get(authMiddleware, postsController.fetchPostById);
 router.route('/likePost').post(authMiddleware, postsController.likePost);
 router.route('/dislikePost').post(authMiddleware, postsController.dislikePost);
+router.route('/deletePostById').post(authMiddleware, postsController.deletePostById);
+router.route('/fetchPostByIdPost').get(authMiddleware, postsController.fetchPostByIdPost);
 
 module.exports = router;

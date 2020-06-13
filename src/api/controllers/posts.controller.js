@@ -60,3 +60,23 @@ exports.dislikePost = async (req, res, next) => {
 		next(error);
 	}
 }
+exports.deletePostById = async (req, res, next) => {
+	try {
+		const { idPost } = req.body;
+		const response = await postService.deletePostById(idPost);
+		const { code, ...rest } = response;
+		return res.status(code).json(rest);
+	} catch (error) {
+		next(error);
+	}
+}
+exports.fetchPostByIdPost = async (req, res, next) => {
+	try {
+		const { idPost } = req.query;
+		const response = await postService.fetchPostByIdPost(idPost);
+		const { code, ...rest } = response;
+		return res.status(code).json(rest);
+	} catch (error) {
+		next(error);
+	}
+}
