@@ -62,8 +62,26 @@ async function addFriendCancel(idEvent) {
 	}
 }
 
+async function cancelFriend(idFriend, idUser) {
+	await userCollection.findByIdAndUpdate(idUser, {$pull: {friends: {idUser: idFriend}}});
+	await userCollection.findByIdAndUpdate(idFriend, {$pull: {friends: {idUser}}});
+
+	const doc = new eventCollection({
+		idSender: idUser,
+		idReceiver: idFriend,
+		type: 'NOTIFICATION',
+		description: 'UN_FRIEND'
+	});
+	const saveEvent = await doc.save();
+	const newEvent = await eventCollection.findById(saveEvent._id).populate('idSender', 'displayName photoURL');
+	return {
+		newEvent
+	}
+}
+
 module.exports = {
 	sendAddFriend,
 	addFriend,
-	addFriendCancel
+	addFriendCancel,
+	cancelFriend
 }

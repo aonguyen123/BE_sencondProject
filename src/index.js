@@ -4,7 +4,7 @@ const server = require("./config/express.config");
 const { addUserChat, removeUserChat, getUser } = require('./utils/user');
 const { createRoom, joinRoom, updateJoinRoom, unJoinRoom, disconnect, leaveRoom, deleteRoom } = require('./utils/room');
 const { addMessage } = require('./utils/messages');
-const { sendAddFriend, addFriend, addFriendCancel } = require('./utils/events');
+const { sendAddFriend, addFriend, addFriendCancel, cancelFriend } = require('./utils/events');
 
 const io = socketio(server);
 
@@ -95,6 +95,13 @@ io.on('connection', socket => {
 		socket.emit('addFriendCancel', {idEvent});
 		socket.to(newEvent.idReceiver).emit('sendEvent', {newEvent});
 		callback();
+	});
+
+	socket.on('cancelFriend', async ({idFriend, idUser}, callback) => {
+		const { newEvent } = await cancelFriend(idFriend, idUser);
+		socket.to(idFriend).emit('sendEvent', {newEvent});
+		socket.to(idFriend).emit('unFriend', {idUser});
+		callback(idFriend);
 	});
 	//
 	socket.on('hasLeft', async () => {
