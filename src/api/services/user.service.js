@@ -174,8 +174,9 @@ module.exports = {
 	searchUser: async (q, idUser) => {
 		try {
 			q = q.toLowerCase();
+			const keyword = convertVie(q);
 			const users = await userCollection.find({
-				_id: {$ne: idUser}, searchUser: { $regex: ".*" + q + ".*" }
+				_id: {$ne: idUser}, searchUser: { $regex: ".*" + keyword + ".*" }
 			}, 'displayName photoURL');
 			return {
 				code: httpStatus.OK,
